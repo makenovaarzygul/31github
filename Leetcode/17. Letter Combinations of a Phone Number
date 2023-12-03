@@ -1,37 +1,58 @@
 class Solution {
-    public List<String> letterCombinations(String digits) {
-     List<String> result = new ArrayList<>();
-        if (digits == null || digits.length() == 0) {
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+    List<List<Integer>> result = new ArrayList<>();
+
+        if (nums == null || nums.length < 4) {
             return result;
         }
 
-        Map<Character, String> phoneMap = new HashMap<>();
-        phoneMap.put('2', "abc");
-        phoneMap.put('3', "def");
-        phoneMap.put('4', "ghi");
-        phoneMap.put('5', "jkl");
-        phoneMap.put('6', "mno");
-        phoneMap.put('7', "pqrs");
-        phoneMap.put('8', "tuv");
-        phoneMap.put('9', "wxyz");
+        Arrays.sort(nums);
 
-        backtrack(result, phoneMap, digits, 0, new StringBuilder());
+        int n = nums.length;
+
+        for (int i = 0; i < n - 3; i++) {
+           
+            if (i > 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+
+            for (int j = i + 1; j < n - 2; j++) {
+             
+                if (j > i + 1 && nums[j] == nums[j - 1]) {
+                    continue;
+                }
+
+                int left = j + 1;
+                int right = n - 1;
+
+                while (left < right) {
+                    int sum = nums[i] + nums[j] + nums[left] + nums[right];
+
+                    if (sum == target) {
+                        result.add(Arrays.asList(nums[i], nums[j], nums[left], nums[right]));
+
+                        // Skip duplicates for the third element
+                        while (left < right && nums[left] == nums[left + 1]) {
+                            left++;
+                        }
+
+                    
+                        while (left < right && nums[right] == nums[right - 1]) {
+                            right--;
+                        }
+
+                        left++;
+                        right--;
+                    } else if (sum < target) {
+                        left++;
+                    } else {
+                        right--;
+                    }
+                }
+            }
+        }
+
         return result;
     }
-
-    private static void backtrack(List<String> result, Map<Character, String> phoneMap, String digits, int index, StringBuilder current) {
-        if (index == digits.length()) {
-            result.add(current.toString());
-            return;
-        }
-
-        char digit = digits.charAt(index);
-        String letters = phoneMap.get(digit);
-
-        for (char letter : letters.toCharArray()) {
-            current.append(letter);
-            backtrack(result, phoneMap, digits, index + 1, current);
-            current.deleteCharAt(current.length() - 1);
-        }
-    }
 }
+
